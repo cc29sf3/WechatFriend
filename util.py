@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+import time
+import re
+
+
+class Processor():
+    def date(self, datetime):
+        """
+        处理时间,转化成发布时间的时间戳
+        :param datetime: 原始时间
+        :return: 处理后时间
+        """
+        if re.match('\d+分钟前', datetime):
+            minute = re.match('(\d+)', datetime).group(1)
+            datetime = time.strftime('%Y-%m-%d', time.localtime(time.time() - float(minute) * 60))
+        if re.match('\d+小时前', datetime):
+            hour = re.match('(\d+)', datetime).group(1)
+            datetime = time.strftime('%Y-%m-%d', time.localtime(time.time() - float(hour) * 60 * 60))
+        if re.match('昨天', datetime):
+            datetime = time.strftime('%Y-%m-%d', time.localtime(time.time() - 24 * 60 * 60))
+        if re.match('\d+天前', datetime):
+            day = re.match('(\d+)', datetime).group(1)
+            datetime = time.strftime('%Y-%m-%d', time.localtime(time.time() - float(day) * 24 * 60 * 60))
+        return datetime
+
+    def clean(self, content):
+        dirty_stuff = ["\"", "\\", "/", "*", "'", "=", "-", "#", ";", "<", ">", "+", "%", "$", "(", ")", "%", "@", "!",
+                       "\n"]
+        for stuff in dirty_stuff:
+            content = content.replace(stuff, "")
+        return content.strip()
